@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Light theme — clean & readable */
+  --color-background: #f8f7f4;
+  --color-foreground: #1c1c1a;
+
+  /* Gold accents (darkened for white-bg contrast) */
+  --color-gold: #8a7000;
+  --color-gold-light: #b8960c;
+  --color-gold-dim: #c9a020;
+
+  /* Surface colors */
+  --color-felt: #f8f7f4;
+  --color-felt-light: #efede6;
+  --color-felt-card: #ffffff;
+  --color-felt-hover: #f3f2ed;
+  --color-felt-border: #ddd9ce;
+  --color-felt-border-light: #e8e5db;
+
+  /* Text */
+  --color-text-primary: #1c1c1a;
+  --color-text-secondary: #5c5850;
+  --color-text-muted: #9c9688;
+
+  /* Status */
+  --color-danger: #dc2626;
+  --color-danger-dim: #ef4444;
+  --color-success: #16a34a;
+  --color-info: #2563eb;
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #efede6;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc8bc;
+  border-radius: 3px;
+}
+
+/* PWA safe area */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
 }
