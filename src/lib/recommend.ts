@@ -129,6 +129,13 @@ export function recommend(
   const occupiedDates = new Set<string>()
   const selectedGroups = new Set<number>() // One flight per event
 
+  // Budget distribution: slider controls how much one event can consume
+  // Slider 0 ("play more events") → max 60% of budget per event
+  // Slider 100 ("go big") → max 100% of budget per event
+  const aggression = prefs.policy_slider / 100
+  const maxBudgetRatio = 0.6 + aggression * 0.4
+  const maxSingleSpend = prefs.total_budget * maxBudgetRatio
+
   // Pre-fill existing plan Day 1 dates only
   for (const entry of existingPlan) {
     const t = allTournaments.find((tt) => tt.id === entry.tournament_id)
@@ -140,6 +147,7 @@ export function recommend(
 
   for (const { tournament: t, score } of scored) {
     if (budget < t.buy_in) continue
+    if (t.buy_in > maxSingleSpend) continue
     if (existingPlan.some((e) => e.tournament_id === t.id)) continue
 
     // Only auto-select one flight per event
