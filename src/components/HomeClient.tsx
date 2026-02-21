@@ -63,6 +63,7 @@ export function HomeClient() {
   const [swappedFlights, setSwappedFlights] = useState<Map<number, number>>(new Map())
   const [dateMode, setDateMode] = useState<"dates" | "days">("dates")
   const [stayDays, setStayDays] = useState(10)
+  const [manualAdditions, setManualAdditions] = useState<Set<number>>(new Set())
 
   // Group tournaments by flight_group
   const flightGroupMap = useMemo(() => {
@@ -107,6 +108,10 @@ export function HomeClient() {
       const raw = localStorage.getItem("wsop-planner-priorities")
       if (raw) setPrioritizedIds(new Set(JSON.parse(raw)))
     } catch {}
+    // Load manually added events from Browse page
+    const existing = getPlan()
+    const manualIds = existing.filter((e) => e.added_manually).map((e) => e.tournament_id)
+    if (manualIds.length > 0) setManualAdditions(new Set(manualIds))
     setMounted(true)
   }, [])
 
@@ -209,8 +214,14 @@ export function HomeClient() {
       filtered = filtered.filter((e) => !toRemove.has(e.tournament_id))
     }
 
-    return filtered
-  }, [prefs, manualRemovals, prioritizedIds, sharedPlanIds, swappedFlights, bestWindow])
+    // Append manually added events from Browse page
+    const recommendedIds = new Set(filtered.map((e) => e.tournament_id))
+    const manualEntries = [...manualAdditions]
+      .filter((id) => !recommendedIds.has(id) && !manualRemovals.has(id))
+      .map((id) => ({ tournament_id: id, added_manually: true }))
+
+    return [...filtered, ...manualEntries]
+  }, [prefs, manualRemovals, prioritizedIds, sharedPlanIds, swappedFlights, bestWindow, manualAdditions])
 
   // Persist plan to storage only after client hydration
   useEffect(() => {
