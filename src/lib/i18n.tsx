@@ -145,6 +145,13 @@ const dict: Record<string, Record<Locale, string>> = {
   "plan.stayDays":      { en: "Days in Vegas", ja: "ラスベガス滞在日数", ko: "라스베가스 체류일수", zh: "拉斯维加斯停留天数" },
   "plan.bestWindow":    { en: "Best: {start}–{end} ({count} events)", ja: "おすすめ: {start}〜{end}（{count}イベント）", ko: "추천: {start}–{end} ({count}개 이벤트)", zh: "推荐: {start}–{end}（{count}个赛事）" },
 
+  // Ladies/Seniors filter
+  "plan.includeLadies": { en: "Include Ladies events", ja: "Ladies イベントを含む", ko: "Ladies 이벤트 포함", zh: "包含 Ladies 赛事" },
+  "plan.includeSeniors":{ en: "Include Seniors events", ja: "Seniors イベントを含む", ko: "Seniors 이벤트 포함", zh: "包含 Seniors 赛事" },
+
+  // Auto days
+  "plan.autoDays":      { en: "Auto", ja: "自動", ko: "자동", zh: "自动" },
+
   // Alternative flights
   "card.altFlights":    { en: "Other flights:", ja: "他のフライト:", ko: "다른 플라이트:", zh: "其他场次:" },
 

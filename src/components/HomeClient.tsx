@@ -34,6 +34,8 @@ const SSR_DEFAULTS: UserPreferences = {
   reentry_limit: 1,
   game_types: ["NLH", "PLO"],
   game_mix: 50,
+  include_ladies: false,
+  include_seniors: false,
 }
 
 function formatMoney(n: number): string {
@@ -399,6 +401,40 @@ export function HomeClient() {
                 }}
                 className="w-20 rounded border border-felt-border bg-felt px-2 py-1.5 text-sm text-text-primary text-center focus:border-gold-dim focus:outline-none"
               />
+              <button
+                onClick={() => {
+                  const WSOP_START = "2026-05-26"
+                  const WSOP_END = "2026-07-15"
+                  const startMs = new Date(WSOP_START + "T00:00:00").getTime()
+                  const endMs = new Date(WSOP_END + "T00:00:00").getTime()
+                  const totalDays = Math.round((endMs - startMs) / 86400000) + 1
+                  const candidates = [3, 5, 7, 10, 14, 21, 30].filter((d) => d <= totalDays)
+                  let bestDays = candidates[0]
+                  let bestDensity = 0
+                  for (const days of candidates) {
+                    const windowCount = totalDays - days + 1
+                    let maxCount = 0
+                    for (let i = 0; i < windowCount; i++) {
+                      const wStart = addDays(WSOP_START, i)
+                      const wEnd = addDays(WSOP_START, i + days - 1)
+                      const result = recommend(tournaments, { ...prefs, date_start: wStart, date_end: wEnd })
+                      if (result.length > maxCount) maxCount = result.length
+                    }
+                    const density = maxCount / days
+                    if (density > bestDensity) {
+                      bestDensity = density
+                      bestDays = days
+                    }
+                  }
+                  setStayDays(bestDays)
+                  setManualRemovals(new Set())
+                  setSwappedFlights(new Map())
+                  setSharedPlanIds(null)
+                }}
+                className="rounded-md bg-gold-dim/30 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold-dim/40 transition-colors"
+              >
+                {t("plan.autoDays")}
+              </button>
             </div>
             {bestWindow && bestWindow.count > 0 && (
               <p className="mt-1.5 text-xs text-success">
@@ -438,6 +474,28 @@ export function HomeClient() {
           ))}
         </div>
       </section>
+
+      {/* Ladies / Seniors filter */}
+      <div className="mt-3 flex flex-wrap gap-4">
+        <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!prefs.include_ladies}
+            onChange={(e) => updatePref({ include_ladies: e.target.checked })}
+            className="accent-gold"
+          />
+          {t("plan.includeLadies")}
+        </label>
+        <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!prefs.include_seniors}
+            onChange={(e) => updatePref({ include_seniors: e.target.checked })}
+            className="accent-gold"
+          />
+          {t("plan.includeSeniors")}
+        </label>
+      </div>
 
       {/* More options toggle */}
       <button

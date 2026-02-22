@@ -115,6 +115,8 @@ export function recommend(
     if (prefs.game_types.length > 0 && !prefs.game_types.includes(t.format)) return false
     if (prefs.date_start && t.date < prefs.date_start) return false
     if (prefs.date_end && t.date > prefs.date_end) return false
+    if (/ladies/i.test(t.name) && !prefs.include_ladies) return false
+    if (/seniors?/i.test(t.name) && !prefs.include_seniors) return false
     return true
   })
 

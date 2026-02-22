@@ -37,6 +37,8 @@ export type UserPreferences = {
   game_mix: number          // 0=NLH heavy, 50=balanced, 100=non-NLH heavy
   date_start?: string
   date_end?: string
+  include_ladies?: boolean   // default false
+  include_seniors?: boolean  // default false
 }
 
 export type BuyInRecord = {
