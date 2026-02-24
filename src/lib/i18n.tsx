@@ -149,6 +149,9 @@ const dict: Record<string, Record<Locale, string>> = {
   "plan.includeLadies": { en: "Include Ladies events", ja: "Ladies イベントを含む", ko: "Ladies 이벤트 포함", zh: "包含 Ladies 赛事" },
   "plan.includeSeniors":{ en: "Include Seniors events", ja: "Seniors イベントを含む", ko: "Seniors 이벤트 포함", zh: "包含 Seniors 赛事" },
 
+  // Exclude Main Event
+  "plan.excludeMain":   { en: "Exclude Main Event", ja: "メインイベントを除外", ko: "메인 이벤트 제외", zh: "排除主赛事" },
+
   // Auto days
   "plan.autoDays":      { en: "Auto", ja: "自動", ko: "자동", zh: "自动" },
 

@@ -117,6 +117,7 @@ export function recommend(
     if (prefs.date_end && t.date > prefs.date_end) return false
     if (/ladies/i.test(t.name) && !prefs.include_ladies) return false
     if (/seniors?/i.test(t.name) && !prefs.include_seniors) return false
+    if (isMainEvent(t) && prefs.exclude_main_event) return false
     return true
   })
 

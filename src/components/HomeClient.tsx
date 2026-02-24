@@ -36,6 +36,7 @@ const SSR_DEFAULTS: UserPreferences = {
   game_mix: 50,
   include_ladies: false,
   include_seniors: false,
+  exclude_main_event: false,
 }
 
 function formatMoney(n: number): string {
@@ -475,7 +476,7 @@ export function HomeClient() {
         </div>
       </section>
 
-      {/* Ladies / Seniors filter */}
+      {/* Ladies / Seniors / Main Event filter */}
       <div className="mt-3 flex flex-wrap gap-4">
         <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
           <input
@@ -494,6 +495,15 @@ export function HomeClient() {
             className="accent-gold"
           />
           {t("plan.includeSeniors")}
+        </label>
+        <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!prefs.exclude_main_event}
+            onChange={(e) => updatePref({ exclude_main_event: e.target.checked })}
+            className="accent-gold"
+          />
+          {t("plan.excludeMain")}
         </label>
       </div>
 
