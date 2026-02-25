@@ -39,7 +39,7 @@ export type UserPreferences = {
   date_end?: string
   include_ladies?: boolean   // default false
   include_seniors?: boolean  // default false
-  exclude_main_event?: boolean  // default false
+  include_main_event?: boolean  // default false — when true, locks Main Event into plan
 }
 
 export type BuyInRecord = {

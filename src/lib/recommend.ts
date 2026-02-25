@@ -117,7 +117,6 @@ export function recommend(
     if (prefs.date_end && t.date > prefs.date_end) return false
     if (/ladies/i.test(t.name) && !prefs.include_ladies) return false
     if (/seniors?/i.test(t.name) && !prefs.include_seniors) return false
-    if (isMainEvent(t) && prefs.exclude_main_event) return false
     return true
   })
 
@@ -129,8 +128,23 @@ export function recommend(
   // Greedy selection
   const selected: PlanEntry[] = []
   let budget = prefs.total_budget
+
   const occupiedDates = new Set<string>()
   const selectedGroups = new Set<number>() // One flight per event
+
+  // If include_main_event is set, lock Main Event in first (bypasses budget ratio cap)
+  if (prefs.include_main_event) {
+    const mainEntry = scored.find(({ tournament: t }) => isMainEvent(t))
+    if (mainEntry && budget >= mainEntry.tournament.buy_in) {
+      selected.push({
+        tournament_id: mainEntry.tournament.id,
+        added_manually: false,
+        score: mainEntry.score,
+      })
+      budget -= mainEntry.tournament.buy_in
+      occupiedDates.add(mainEntry.tournament.date)
+    }
+  }
 
   // Budget distribution: slider controls how much one event can consume
   // Slider 0 ("play more events") → max 60% of budget per event
@@ -149,6 +163,7 @@ export function recommend(
   }
 
   for (const { tournament: t, score } of scored) {
+    if (selected.some((e) => e.tournament_id === t.id)) continue
     if (budget < t.buy_in) continue
     if (t.buy_in > maxSingleSpend) continue
     if (existingPlan.some((e) => e.tournament_id === t.id)) continue

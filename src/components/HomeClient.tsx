@@ -36,7 +36,7 @@ const SSR_DEFAULTS: UserPreferences = {
   game_mix: 50,
   include_ladies: false,
   include_seniors: false,
-  exclude_main_event: false,
+  include_main_event: false,
 }
 
 function formatMoney(n: number): string {
@@ -148,6 +148,12 @@ export function HomeClient() {
     if (user) setCloudDirty(true)
   }, [user])
 
+  // Main Event earliest date (for include_main_event window constraint)
+  const mainEventFirstDate = useMemo(() => {
+    const main = tournaments.find((t) => /main.event/i.test(t.name) && !/mini/i.test(t.name))
+    return main?.date ?? null
+  }, [])
+
   // Sliding window: find the best N-day window within WSOP period
   const bestWindow = useMemo(() => {
     if (dateMode !== "days") return null
@@ -164,6 +170,10 @@ export function HomeClient() {
     for (let i = 0; i < windowCount; i++) {
       const wStart = addDays(WSOP_START, i)
       const wEnd = addDays(WSOP_START, i + days - 1)
+      // Skip windows that don't contain Main Event when include_main_event is on
+      if (prefs.include_main_event && mainEventFirstDate) {
+        if (mainEventFirstDate < wStart || mainEventFirstDate > wEnd) continue
+      }
       const result = recommend(tournaments, { ...prefs, date_start: wStart, date_end: wEnd })
       const totalScore = result.reduce((s, e) => s + (e.score || 0), 0)
       if (result.length > best.count || (result.length === best.count && totalScore > best.totalScore)) {
@@ -172,7 +182,7 @@ export function HomeClient() {
     }
 
     return best
-  }, [dateMode, stayDays, prefs])
+  }, [dateMode, stayDays, prefs, mainEventFirstDate])
 
   // Auto-recommend: recalculate whenever prefs, removals, priorities, or swaps change
   const plan = useMemo(() => {
@@ -418,6 +428,9 @@ export function HomeClient() {
                     for (let i = 0; i < windowCount; i++) {
                       const wStart = addDays(WSOP_START, i)
                       const wEnd = addDays(WSOP_START, i + days - 1)
+                      if (prefs.include_main_event && mainEventFirstDate) {
+                        if (mainEventFirstDate < wStart || mainEventFirstDate > wEnd) continue
+                      }
                       const result = recommend(tournaments, { ...prefs, date_start: wStart, date_end: wEnd })
                       if (result.length > maxCount) maxCount = result.length
                     }
@@ -499,11 +512,11 @@ export function HomeClient() {
         <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
           <input
             type="checkbox"
-            checked={!!prefs.exclude_main_event}
-            onChange={(e) => updatePref({ exclude_main_event: e.target.checked })}
+            checked={!!prefs.include_main_event}
+            onChange={(e) => updatePref({ include_main_event: e.target.checked })}
             className="accent-gold"
           />
-          {t("plan.excludeMain")}
+          {t("plan.includeMain")}
         </label>
       </div>
 
