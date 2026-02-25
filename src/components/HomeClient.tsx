@@ -421,6 +421,7 @@ export function HomeClient() {
                   const totalDays = Math.round((endMs - startMs) / 86400000) + 1
                   const candidates = [3, 5, 7, 10, 14, 21, 30].filter((d) => d <= totalDays)
                   let bestDays = candidates[0]
+                  let bestCount = 0
                   let bestDensity = 0
                   for (const days of candidates) {
                     const windowCount = totalDays - days + 1
@@ -435,7 +436,9 @@ export function HomeClient() {
                       if (result.length > maxCount) maxCount = result.length
                     }
                     const density = maxCount / days
-                    if (density > bestDensity) {
+                    // Prefer more events; if tied, prefer higher density (shorter trip)
+                    if (maxCount > bestCount || (maxCount === bestCount && density > bestDensity)) {
+                      bestCount = maxCount
                       bestDensity = density
                       bestDays = days
                     }
